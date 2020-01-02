@@ -8,25 +8,23 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class GameView extends View {
 
-    // screen
-    private DisplayMetrics displayMetrics = new DisplayMetrics();
-    private int screenWidth;
-    private int screenHeight;
+    // canvas
+    private int canvasWidth;
+    private int canvasHeight;
     // tree
     private Bitmap tree;
     // bird
     private Bitmap[] bird = new Bitmap[2];
-    private int birdX;
-    private int birdY;
+    private int birdX = 10;
+    private int birdY = 0;
     private int minBirdY;
     private int maxBirdY;
-    private int birdSpeed;
+    private int birdSpeed = 0;
     // life
     private Bitmap[] life = new Bitmap[2];
     // score
@@ -58,27 +56,24 @@ public class GameView extends View {
         levelPaint.setTextSize(32);
         levelPaint.setTypeface(Typeface.DEFAULT_BOLD);
         levelPaint.setAntiAlias(true);
-
-        // get screen size
-        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
-        screenHeight = displayMetrics.heightPixels;
-
-        // initial state of the bird
-        birdX = 0;
-        birdY = screenHeight / 2 - bird[0].getHeight();
-        minBirdY = bird[0].getHeight();
-        maxBirdY = screenHeight - bird[0].getHeight();
-        birdSpeed = 0;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        canvasWidth = canvas.getWidth();
+        canvasHeight = canvas.getHeight();
+
         // draw tree
-        int treeX = 10, treeY = screenHeight - tree.getHeight();
+        int treeX = 10, gapX = 50, treeY = canvasHeight - tree.getHeight();
+        canvas.drawBitmap(tree, treeX, treeY, null);
+        treeX = treeX + tree.getWidth() + gapX;
+        canvas.drawBitmap(tree, treeX, treeY, null);
+        treeX = treeX + tree.getWidth() + gapX;
         canvas.drawBitmap(tree, treeX, treeY, null);
 
         // draw bird
+        minBirdY = bird[0].getHeight();
+        maxBirdY = canvasHeight - bird[0].getHeight();
         birdY += birdSpeed;
         if (birdY < minBirdY) {
             birdY = minBirdY;
@@ -97,7 +92,7 @@ public class GameView extends View {
         }
 
         // draw life
-        int life_x = screenWidth - life[0].getWidth() - 20, life_y = 20, life_gap = life[0].getWidth() + 20;
+        int life_x = canvasWidth - life[0].getWidth() - 20, life_y = 20, life_gap = life[0].getWidth() + 20;
         canvas.drawBitmap(life[0], life_x, life_y, null);
         canvas.drawBitmap(life[0], life_x - life_gap, life_y, null);
         canvas.drawBitmap(life[0], life_x - 2 * life_gap, life_y, null);
