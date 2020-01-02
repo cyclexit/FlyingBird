@@ -18,10 +18,14 @@ public class GameView extends View {
     private DisplayMetrics displayMetrics = new DisplayMetrics();
     private int screenWidth;
     private int screenHeight;
+    // tree
+    private Bitmap tree;
     // bird
     private Bitmap[] bird = new Bitmap[2];
     private int birdX;
     private int birdY;
+    private int minBirdY;
+    private int maxBirdY;
     private int birdSpeed;
     // life
     private Bitmap[] life = new Bitmap[2];
@@ -35,6 +39,8 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
         // get resources
+        tree = BitmapFactory.decodeResource(getResources(), R.drawable.tree);
+
         bird[0] = BitmapFactory.decodeResource(getResources(), R.drawable.bird0);
         bird[1] = BitmapFactory.decodeResource(getResources(), R.drawable.bird1);
 
@@ -58,16 +64,21 @@ public class GameView extends View {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
-        // first position of bird
+        // initial state of the bird
         birdX = 0;
         birdY = screenHeight / 2 - bird[0].getHeight();
+        minBirdY = bird[0].getHeight();
+        maxBirdY = screenHeight - bird[0].getHeight();
+        birdSpeed = 0;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        // draw tree
+        int treeX = 10, treeY = screenHeight - tree.getHeight();
+        canvas.drawBitmap(tree, treeX, treeY, null);
+
         // draw bird
-        int minBirdY = bird[0].getHeight();
-        int maxBirdY = screenHeight - bird[0].getHeight();
         birdY += birdSpeed;
         if (birdY < minBirdY) {
             birdY = minBirdY;
@@ -75,7 +86,9 @@ public class GameView extends View {
         if (birdY > maxBirdY) {
             birdY = maxBirdY;
         }
-        birdSpeed += 2;
+        if (birdY < maxBirdY) {
+            birdSpeed += 2;
+        }
         if (touchFlag) {
             canvas.drawBitmap(bird[1], birdX, birdY, null);
             touchFlag = false;
@@ -100,7 +113,9 @@ public class GameView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             touchFlag = true;
-            birdSpeed -= 20;
+            if (birdY > minBirdY) {
+                birdSpeed -= 20;
+            }
         }
         return true;
     }
