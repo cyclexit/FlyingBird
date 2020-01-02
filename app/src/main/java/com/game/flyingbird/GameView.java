@@ -29,13 +29,15 @@ public class GameView extends View {
     private Bitmap worm;
     private int wormX;
     private int wormY;
-    private int wormSpeed = 0;
+    private int wormSpeed;
+    private final static int WORM_VALUE = 10;
     // shit
     private Bitmap shit;
     private int shitX;
     private int shitY;
-    private int shitSpeed = 0;
+    private int shitSpeed;
     // life
+    private int lifeCounter = 3;
     private Bitmap[] life = new Bitmap[2];
     // score
     private int score;
@@ -125,7 +127,7 @@ public class GameView extends View {
         // draw worm
         wormX -= wormSpeed;
         if (hitCheck(wormX, wormY)) {
-            score += 10;
+            score += WORM_VALUE;
             wormX = canvasWidth + worm.getWidth();
             wormY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
         } else if (wormX < 0) {
@@ -136,7 +138,11 @@ public class GameView extends View {
 
         // draw shit
         shitX -= shitSpeed;
-        if (shitX < 0) {
+        if (hitCheck(shitX, shitY)) {
+            --lifeCounter;
+            shitX = canvasWidth + shit.getWidth();
+            shitY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        } else if (shitX < 0) {
             shitX = canvasWidth + shit.getWidth();
             shitY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
         }
@@ -144,10 +150,20 @@ public class GameView extends View {
 
 
         // draw life
-        int life_x = canvasWidth - life[0].getWidth() - 20, life_y = 20, life_gap = life[0].getWidth() + 20;
-        canvas.drawBitmap(life[0], life_x, life_y, null);
-        canvas.drawBitmap(life[0], life_x - life_gap, life_y, null);
-        canvas.drawBitmap(life[0], life_x - 2 * life_gap, life_y, null);
+        int lifeX = canvasWidth - life[0].getWidth() - 20, lifeY = 20, lifeGap = life[0].getWidth() + 20;
+        for (int i = 0; i < 3; ++i) {
+            if (i < lifeCounter) {
+                canvas.drawBitmap(life[0], lifeX - i * lifeGap, lifeY, null);
+            } else {
+                canvas.drawBitmap(life[1], lifeX - i * lifeGap, lifeY, null);
+            }
+        }
+        if (lifeCounter == 0) {
+            // dead, go into another window
+        }
+        // canvas.drawBitmap(life[0], lifeX, lifeY, null);
+        // canvas.drawBitmap(life[0], lifeX - lifeGap, lifeY, null);
+        // canvas.drawBitmap(life[0], lifeX - 2 * lifeGap, lifeY, null);
 
         // paint score
         canvas.drawText("Score: " + score, 40, life[0].getHeight() / 2, scorePaint);
