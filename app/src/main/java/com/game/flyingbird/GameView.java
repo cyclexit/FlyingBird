@@ -20,14 +20,25 @@ public class GameView extends View {
     private Bitmap tree;
     // bird
     private Bitmap[] bird = new Bitmap[2];
-    private int birdX = 10;
-    private int birdY = 0;
+    private int birdX;
+    private int birdY;
     private int minBirdY;
     private int maxBirdY;
-    private int birdSpeed = 0;
+    private int birdSpeed;
+    // worm
+    private Bitmap worm;
+    private int wormX;
+    private int wormY;
+    private int wormSpeed = 0;
+    // shit
+    private Bitmap shit;
+    private int shitX;
+    private int shitY;
+    private int shitSpeed = 0;
     // life
     private Bitmap[] life = new Bitmap[2];
     // score
+    private int score;
     private Paint scorePaint = new Paint();
     // level
     private Paint levelPaint = new Paint();
@@ -42,10 +53,15 @@ public class GameView extends View {
         bird[0] = BitmapFactory.decodeResource(getResources(), R.drawable.bird0);
         bird[1] = BitmapFactory.decodeResource(getResources(), R.drawable.bird1);
 
+        worm = BitmapFactory.decodeResource(getResources(), R.drawable.worm);
+
+        shit = BitmapFactory.decodeResource(getResources(), R.drawable.shit);
+
         life[0] = BitmapFactory.decodeResource(getResources(), R.drawable.heart_full);
         life[1] = BitmapFactory.decodeResource(getResources(), R.drawable.heart_empty);
 
         // set up scorePaint
+        score = 0;
         scorePaint.setColor(Color.BLACK);
         scorePaint.setTextSize(32);
         scorePaint.setTypeface(Typeface.DEFAULT_BOLD);
@@ -56,6 +72,21 @@ public class GameView extends View {
         levelPaint.setTextSize(32);
         levelPaint.setTypeface(Typeface.DEFAULT_BOLD);
         levelPaint.setAntiAlias(true);
+
+        // initial state of the bird
+        birdX = 10;
+        birdY = 0;
+        birdSpeed = 0;
+
+        // initial state of the worm
+        wormX = canvasWidth + worm.getWidth();
+        wormY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        wormSpeed = 20;
+
+        // initial state of the shit
+        shitX = canvasWidth + shit.getWidth();
+        shitY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        shitSpeed = 20;
     }
 
     @Override
@@ -73,7 +104,7 @@ public class GameView extends View {
 
         // draw bird
         minBirdY = bird[0].getHeight();
-        maxBirdY = canvasHeight - bird[0].getHeight();
+        maxBirdY = canvasHeight - tree.getHeight() - bird[0].getHeight();
         birdY += birdSpeed;
         if (birdY < minBirdY) {
             birdY = minBirdY;
@@ -91,6 +122,27 @@ public class GameView extends View {
             canvas.drawBitmap(bird[0], birdX, birdY, null);
         }
 
+        // draw worm
+        wormX -= wormSpeed;
+        if (hitCheck(wormX, wormY)) {
+            score += 10;
+            wormX = canvasWidth + worm.getWidth();
+            wormY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        } else if (wormX < 0) {
+            wormX = canvasWidth + worm.getWidth();
+            wormY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        }
+        canvas.drawBitmap(worm, wormX, wormY, null);
+
+        // draw shit
+        shitX -= shitSpeed;
+        if (shitX < 0) {
+            shitX = canvasWidth + shit.getWidth();
+            shitY = (int) Math.floor(Math.random() * (maxBirdY - minBirdY) + minBirdY);
+        }
+        canvas.drawBitmap(shit, shitX, shitY, null);
+
+
         // draw life
         int life_x = canvasWidth - life[0].getWidth() - 20, life_y = 20, life_gap = life[0].getWidth() + 20;
         canvas.drawBitmap(life[0], life_x, life_y, null);
@@ -98,7 +150,7 @@ public class GameView extends View {
         canvas.drawBitmap(life[0], life_x - 2 * life_gap, life_y, null);
 
         // paint score
-        canvas.drawText("Score: 0", 40, life[0].getHeight() / 2, scorePaint);
+        canvas.drawText("Score: " + score, 40, life[0].getHeight() / 2, scorePaint);
 
         // paint level
         canvas.drawText("Level 1", 40, life[0].getHeight(), levelPaint);
@@ -113,5 +165,10 @@ public class GameView extends View {
             }
         }
         return true;
+    }
+
+    public boolean hitCheck(int x, int y) {
+        return birdX < x && x < (birdX + bird[0].getWidth()) &&
+                birdY < y && y < (birdY + bird[0].getHeight());
     }
 }
