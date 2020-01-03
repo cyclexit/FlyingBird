@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">FlyingBird</string>
+    <!--activity_main-->
     <string name="start_button">Start</string>
+    <!--activity_game-->
+    <string name="title_text_view">Dead!</string>
+    <string name="score_text_view">Score</string>
+    <string name="restart_button">Restart</string>
+    <string name="return_button">Return</string>
 </resources>

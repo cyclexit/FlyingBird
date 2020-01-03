@@ -187,4 +187,13 @@ public class GameView extends View {
         return birdX < x && x < (birdX + bird[0].getWidth()) &&
                 birdY < y && y < (birdY + bird[0].getHeight());
     }
+
+    // getters
+    public int getLifeCounter() {
+        return lifeCounter;
+    }
+
+    public int getScore() {
+        return score;
+    }
 }

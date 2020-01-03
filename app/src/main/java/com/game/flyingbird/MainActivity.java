@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    // onClick method for startButton
     public void start(View view) {
         Intent intent = new Intent(getApplicationContext(), GameActivity.class);
         startActivity(intent);
